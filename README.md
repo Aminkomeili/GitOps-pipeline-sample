@@ -5,7 +5,7 @@
 
 
 This GitOps pipeline is designed to prepare, test, build, and deploy a Python application to Kubernetes.
-Prerequisites
+## Prerequisites
 
 * GitLab account and access to a repository
 * Kubernetes cluster with kubectl installed

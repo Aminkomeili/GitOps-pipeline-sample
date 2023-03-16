@@ -1,0 +1,52 @@
+stages:
+  - prepare
+  - test
+  - build
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  DOCKER_REGISTRY: docker.example.com
+  KUBECONFIG: /tmp/kubeconfig
+
+before_script:
+  - apt-get update && apt-get install -y python3-venv
+  - python3 -m venv env
+  - source env/bin/activate
+  - pip install --upgrade pip
+
+prepare:
+  stage: prepare
+  script:
+    - pip install -r requirements.txt
+
+test:
+  stage: test
+  script:
+    - pylint --fail-under=8 --exit-zero .
+    - isort --check-only --diff .
+    - black --check --diff .
+    - python -m unittest discover
+
+build:
+  stage: build
+  script:
+    - pylint --fail-under=8 --exit-zero .
+    - python -m unittest discover
+    - docker build -t $DOCKER_REGISTRY/myapp:$IMAGE_TAG .
+    - docker push $DOCKER_REGISTRY/myapp:$IMAGE_TAG
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl config set-credentials my-user --token=$KUBE_TOKEN
+    - kubectl config set-cluster my-cluster --server=$KUBE_SERVER --insecure-skip-tls-verify=true
+    - kubectl config set-context my-context --user=my-user --cluster=my-cluster
+    - kubectl config use-context my-context
+    - kubectl apply -f deployment.yml
+
+after_script:
+  - echo "Quality report:"
+  - pylint --fail-under=8 --exit-zero --output-format=colorized .
+  - echo "Deployments:"
+  - kubectl get deployments

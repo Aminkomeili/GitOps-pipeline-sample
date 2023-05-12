@@ -1,6 +1,5 @@
 # GitOps Pipeline
 
-
 ![gitops-500x263](https://user-images.githubusercontent.com/92720374/225552165-2dcac1fb-5c05-4119-9950-e49f1434608d.png)
 
 

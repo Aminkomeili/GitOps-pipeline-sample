@@ -4,6 +4,7 @@ stages:
   - build
   - deploy
 
+
 variables:
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   DOCKER_REGISTRY: docker.example.com
